@@ -3,6 +3,7 @@ import java.util.Scanner;
 public class Calculadora {
     public static void main(String[] args) {
         getTargetNumber();
+        getFirstUserNumber();
 //Variables, condicionales, bucles y, preferiblemente, funciones.
 
 
@@ -10,13 +11,8 @@ public class Calculadora {
 
 
 
-//Pedir primer numero entre 1 y 9
 
-//Si es el 1º número se aceptará automáticamente, con while (numInPut == 0)
-//Si no es el 1º numero, el número deberá estar en la misma fila o columna que el ultimo introducido, pero no ser el mismo. if (numInPut !=0, numInPut == 1)
 
-//número sea valido + total y se comprobará si el igual = o mayor > que el objetivo del juego,
-// si iguala o supera = perdedor.
 
 //Al finalizar la partida sout (Quieres volver a jugar?): si = se reiniciará, no = chao
     }
@@ -48,5 +44,47 @@ public class Calculadora {
         }
         System.out.println("Genial! Tu objetivo es " + targetNum + ", empieza el juego");
         return targetNum;
+
     }
+
+    public static int getFirstUserNumber(){
+        //Pedir primer numero entre 1 y 9
+        //El 1º número se aceptará automáticamente, ¿¿main con while (numInPut == 0)??
+
+        int count = 0;
+        System.out.println("Jugador 1, introduce un número entero del 1 al 9");
+        Scanner sc = new Scanner(System.in);
+        count = sc.nextInt();
+
+        while (count < 1 || count > 9) {
+            System.err.println("Ese número no es válido, introduce otro");
+            count = sc.nextInt();
+
+        }
+        System.out.println("Suma total: " + count + ", turno del jugador 2");
+        return count;
+
+    }
+    //segunda función para el resto de jugadas
+
+    public static int getRestOfTheNumbers(){
+        //Si no es el 1º numero, el número deberá estar en la misma fila o columna que el ultimo introducido,
+        // pero no ser el mismo. if (numInPut !=0, numInPut == 1)
+
+        //número sea valido + total y se comprobará si el igual = o mayor > que el objetivo del juego,
+        // si iguala o supera = perdedor.
+
+        int nextNumber;
+        Scanner sc = new Scanner(System.in);
+        nextNumber = sc.nextInt();
+
+        count = count + nextNumber;
+
+
+    }
+
+
+
+
+
 }
