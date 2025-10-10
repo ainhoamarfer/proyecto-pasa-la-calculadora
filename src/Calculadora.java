@@ -3,11 +3,47 @@ import java.util.Scanner;
 public class Calculadora {
 
     public static void main(String[] args) {
-        int previousNumber;
-        int nextNumber;
+        int previousNumber = 0;
+        int firstNumber;
+        int count = 0;
+        boolean continuar = true;
+        String respuesta;
+        boolean theEnd = false;
 
-        verifyPreviousNumber(1, 5);
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Bienvenido a Pasa la Calculadora, para empezar introduce un número objetivo, tendra que ser mayor que 10 y menos que 99");
+        int targetNum = getTargetNumber();
+
+        System.out.println("¡Genial! Empieza la partida, tu objetivo es " + targetNum + "\nJugador 1. Introduce un primer número del 1 al 9");
+        firstNumber = getFirstUserNumber(count, previousNumber);
+        count = firstNumber;
+
+        while (continuar == true) {
+            System.out.println("Suma total " + count + ", siguiente turno\nElige un número que esté en la misma columna o en la misma fila que " + count);
+            count = getRestOfTheNumbers(count, firstNumber, previousNumber);
+
+            theEnd = comprobarFinalPartida(count, targetNum);
+
+            if (theEnd == true) {
+                System.out.println("Fin de partida. \t¿Quiéres jugar otra? (si/no)");
+                respuesta = sc.next();
+
+                if (!respuesta.equalsIgnoreCase("si")) {
+                    continuar = false;
+                }
+            }
+
+        }
         //Al finalizar la partida sout (Quieres volver a jugar?): si = se reiniciará, no = chao
+    }
+
+    private static boolean comprobarFinalPartida(int count, int targetNum) {
+        //número sea valido + total y se comprobará si el igual = o mayor > que el objetivo del juego,
+        if (count >= targetNum) {
+            //Al finalizar la partida sout (Quieres volver a jugar?): si = se reiniciará, no = chao
+            return true;
+        }
+        return false;
     }
 
 
@@ -16,9 +52,8 @@ public class Calculadora {
         //Numero objetivo: Pedir un numero entre 10 y 99. Si esta  fuera de ese rango = error y se vuelve a pedir.
         //Si introduce -1 el número se generará aleatoriamente dentro del rango.
 
-        System.out.println("Establece el número objetivo entre 10 y 99");
         Scanner sc = new Scanner(System.in);
-        int targetNum = sc.nextInt();
+        int targetNumPriv = sc.nextInt();
 
         //el rango que queremos tener es entre 10 y 99
         //de 10 a 100 hay 90 números y mínimo queremos empezar en 10.
@@ -27,37 +62,33 @@ public class Calculadora {
         int maxNumber = 90;
         int minNumber = 10;
 
-        if (targetNum == -1) {
-            targetNum = (int) (Math.random() * maxNumber + minNumber);
+        if (targetNumPriv == -1) {
+            targetNumPriv = (int) (Math.random() * maxNumber + minNumber);
         }
 
         //mientras el numero es invalido
         //el nº es invalido cuando es menor que 10 o mayor que 99
-        while (targetNum < 10 || targetNum > 99) {
+        while (targetNumPriv < 10 || targetNumPriv > 99) {
             System.err.println("Ese número no es valido, introduce un número entre 10 y 99");
-            targetNum = sc.nextInt();
+            targetNumPriv = sc.nextInt();
         }
-        System.out.println("Genial! Tu objetivo es " + targetNum + ", empieza el juego");
-        return targetNum;
+        return targetNumPriv;
 
     }
 
-    public static int getFirstUserNumber(int previousNumber) {
+    public static int getFirstUserNumber(int count, int previousNumber) {
         //Pedir primer numero entre 1 y 9
         //El 1º número se aceptará automáticamente, ¿¿main con while (numInPut == 0)??
 
-        int count = 0;
-        System.out.println("Jugador 1, introduce un número entero del 1 al 9");
+
+        //System.out.println("Jugador 1, introduce un número entero del 1 al 9");
         Scanner sc = new Scanner(System.in);
         count = sc.nextInt();
-        previousNumber = count;
 
         while (count < 1 || count > 9) {
             System.err.println("Ese número no es válido, introduce otro");
             count = sc.nextInt();
         }
-
-        System.out.println("Suma total: " + count + ", turno del jugador 2");
         return count;
     }
 
@@ -68,82 +99,73 @@ public class Calculadora {
 
         Scanner sc = new Scanner(System.in);
         nextNumber = sc.nextInt();
-        if ( verifyPreviousNumber(previousNumber, nextNumber) == true){
 
-        }
-        verifyPreviousNumber(nextNumber, previousNumber);
-        //número sea valido + total y se comprobará si el igual = o mayor > que el objetivo del juego,
-        // si iguala o supera = perdedor.
-
-        count = count + nextNumber;
-        if (count >= getTargetNumber()){
-            System.out.println("Has pedido");
-        }else {
-            System.out.println("Ahora la suma es de" + count);
+        if (verifyPreviousNumber(previousNumber, nextNumber) == false){
+            System.err.println("Este número no es valido, introduce otro que este en la misma columna o fila que " + previousNumber);
+            nextNumber = sc.nextInt();
+        }else{
+            count = count + nextNumber;
+            System.out.println("Ahora la suma es de " + count);
         }
         return count;
+
+
+        // si iguala o supera = perdedor.
+
     }
 
     public static boolean verifyPreviousNumber(int previousNumber, int nextNumber) {
 
         //hacer función a parte + while
+
         //si count == 1, nextNumber tiene que ser o 2 o 3 o 4 o 7
 
-
-        if (previousNumber == 1 && (nextNumber != 1 || nextNumber != 2 || nextNumber != 3 || nextNumber != 4 || nextNumber != 7)) {
-           return false;
-
+        if (previousNumber == 1 && (nextNumber == 2 || nextNumber == 3 || nextNumber == 4 || nextNumber == 7)) {
+           return true;
         }
 
         //si count == 2, nextNumber tiene que ser o 1 o 3 o 5 o 8
 
-        if (previousNumber == 2 && (nextNumber != 2 || nextNumber != 1 || nextNumber != 3 || nextNumber != 5 || nextNumber != 8)) {
-            System.err.println("Movimiento no válido: desde 1 solo puedes sumar un 1, 3, 5 o 8.");
-            return false;
+        if (previousNumber == 2 && (nextNumber == 1 || nextNumber == 3 || nextNumber == 5 || nextNumber == 8)) {
+            return true;
         }
 
         //si count == 3, nextNumber tiene que ser o 1 o 2 o 6 o 9
 
-        if (previousNumber == 3 && (nextNumber != 3 || nextNumber != 1 || nextNumber != 2 || nextNumber != 6 || nextNumber != 9)) {
-            System.err.println("Movimiento no válido: desde 1 solo puedes sumar un 1, 2, 6 o 9.");
-            return false;
+        if (previousNumber == 3 && (nextNumber == 1 || nextNumber == 2 || nextNumber == 6 || nextNumber == 9)) {
+            return true;
         }
         //si count == 4, nextNumber tiene que ser o 1 o 7 o 5 o 6
 
-        if (previousNumber == 4 && (nextNumber != 4 || nextNumber != 1 || nextNumber != 5 || nextNumber != 6 || nextNumber != 7)) {
-            System.err.println("Movimiento no válido: desde 1 solo puedes sumar un 1, 5, 6 o 7.");
-            return false;
+        if (previousNumber == 4 && (nextNumber == 1 || nextNumber == 5 || nextNumber == 6 || nextNumber == 7)) {
+            return true;
         }
 
         //si count == 5, nextNumber tiene que ser o 2 o 6 o 8 o 4
-        if (previousNumber == 5 && (nextNumber != 5 || nextNumber != 2 || nextNumber != 4 || nextNumber != 6 || nextNumber != 8)) {
-            System.err.println("Movimiento no válido: desde 1 solo puedes sumar un 2, 4, 6 o 8.");
-            return false;
+        if (previousNumber == 5 && ( nextNumber == 2 || nextNumber == 4 || nextNumber == 6 || nextNumber == 8)) {
+            return true;
         }
 
         //si count == 6, nextNumber tiene que ser o 3 o 9 o 5 o 4
 
-        if (previousNumber == 6 && (nextNumber != 6 || nextNumber != 3 || nextNumber != 4 || nextNumber != 5 || nextNumber != 9)) {
-            System.err.println("Movimiento no válido: desde 1 solo puedes sumar un 3, 4, 5 o 9.");
-            return false;
+        if (previousNumber == 6 && (nextNumber == 3 || nextNumber == 4 || nextNumber == 5 || nextNumber == 9)) {
+            return true;
         }
 
         //si count == 7, nextNumber tiene que ser o 1 o 4 o 8 o 9
-        if (previousNumber == 7 && (nextNumber != 7 || nextNumber != 1 || nextNumber != 4 || nextNumber != 8 || nextNumber != 9)) {
-            System.err.println("Movimiento no válido: desde 1 solo puedes sumar un 1, 4, 8 o 9.");
-            return false;
+        if (previousNumber == 7 && (nextNumber == 1 || nextNumber == 4 || nextNumber == 8 || nextNumber == 9)) {
+            return true;
         }
 
         //si count == 8, nextNumber tiene que ser o 2 o 5 o 7 o 9
-        if (previousNumber == 8 && (nextNumber != 8 || nextNumber != 2 || nextNumber != 5 || nextNumber != 7 || nextNumber != 9)) {
-            System.err.println("Movimiento no válido: desde 1 solo puedes sumar un 2, 5, 7 o 9.");
-            return false;
+        if (previousNumber == 8 && (nextNumber == 2 || nextNumber == 5 || nextNumber == 7 || nextNumber == 9)) {
+            return true;
         }
 
         //si count == 9, nextNumber tiene que ser o 3 o 6 o 8 o 7
-        if (previousNumber == 9 && (nextNumber == 8 || nextNumber == 3 || nextNumber == 6 || nextNumber == 7)) {//esta esta bien
-            System.err.println("Movimiento no válido: desde 1 solo puedes sumar un 3, 6, 7 o 8.");
+        if (previousNumber == 9 && (nextNumber == 8 || nextNumber == 3 || nextNumber == 6 || nextNumber == 7)) {
             return true;
         }
+        return false;
     }
 }
