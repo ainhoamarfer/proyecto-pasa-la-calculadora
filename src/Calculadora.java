@@ -1,35 +1,42 @@
 import java.util.Scanner;
 //Variables, condicionales, bucles y, preferiblemente, funciones.
 public class Calculadora {
+    // hemos puesto los valores de estas funciones fuera del main, para no tener líos a la hora de llamarlas en las funciones.
+    //de esta manera, las funciones ya saben estos valores.
+    private static int previousNumber = 0;
+    private static int count = 0;
+    private static boolean continuar = true;
+    private static String respuesta;
+    private static boolean theEnd = false;
+    private static int targetNum;
+    private static int nextNumber = 0;
 
     public static void main(String[] args) {
-        int previousNumber = 0;
-        int firstNumber;
-        int count = 0;
-        boolean continuar = true;
-        String respuesta;
-        boolean theEnd = false;
 
         Scanner sc = new Scanner(System.in);
         System.out.println("Bienvenido a Pasa la Calculadora, para empezar introduce un número objetivo, tendra que ser mayor que 10 y menos que 99");
-        int targetNum = getTargetNumber();
 
+        targetNum = getTargetNumber();
         System.out.println("¡Genial! Empieza la partida, tu objetivo es " + targetNum + "\nJugador 1. Introduce un primer número del 1 al 9");
-        firstNumber = getFirstUserNumber(count, previousNumber);
-        count = firstNumber;
+        nextNumber = getPlayableNumber();
 
         while (continuar == true) {
-            System.out.println("Suma total " + count + ", siguiente turno\nElige un número que esté en la misma columna o en la misma fila que " + count);
-            count = getRestOfTheNumbers(count, firstNumber, previousNumber);
-
-            theEnd = comprobarFinalPartida(count, targetNum);
+            System.out.println("Suma total " + count + ", siguiente turno\nElige un número que esté en la misma columna o en la misma fila que " + previousNumber);
+            nextNumber = getPlayableNumber();
+            theEnd = comprobarFinalPartida();
 
             if (theEnd == true) {
                 System.out.println("Fin de partida. \t¿Quiéres jugar otra? (si/no)");
                 respuesta = sc.next();
 
-                if (!respuesta.equalsIgnoreCase("si")) {
-                    continuar = false;
+                if (!respuesta.equalsIgnoreCase("no")) {
+                    resetGame();
+                    System.out.println("Bienvenido a Pasa la Calculadora, para empezar introduce un número objetivo, tendra que ser mayor que 10 y menos que 99");
+
+                    targetNum = getTargetNumber();
+                    System.out.println("¡Genial! Empieza la partida, tu objetivo es " + targetNum + "\nJugador 1. Introduce un primer número del 1 al 9");
+                    nextNumber = getPlayableNumber();
+                    continuar = true;
                 }
             }
 
@@ -37,7 +44,15 @@ public class Calculadora {
         //Al finalizar la partida sout (Quieres volver a jugar?): si = se reiniciará, no = chao
     }
 
-    private static boolean comprobarFinalPartida(int count, int targetNum) {
+    private static void resetGame() {
+        targetNum = 0;
+        previousNumber = 0;
+        nextNumber = 0;
+        count = 0;
+        theEnd = false;
+    }
+
+    private static boolean comprobarFinalPartida() {
         //número sea valido + total y se comprobará si el igual = o mayor > que el objetivo del juego,
         if (count >= targetNum) {
             //Al finalizar la partida sout (Quieres volver a jugar?): si = se reiniciará, no = chao
@@ -53,7 +68,7 @@ public class Calculadora {
         //Si introduce -1 el número se generará aleatoriamente dentro del rango.
 
         Scanner sc = new Scanner(System.in);
-        int targetNumPriv = sc.nextInt();
+        targetNum = sc.nextInt();
 
         //el rango que queremos tener es entre 10 y 99
         //de 10 a 100 hay 90 números y mínimo queremos empezar en 10.
@@ -62,59 +77,51 @@ public class Calculadora {
         int maxNumber = 90;
         int minNumber = 10;
 
-        if (targetNumPriv == -1) {
-            targetNumPriv = (int) (Math.random() * maxNumber + minNumber);
+        if (targetNum == -1) {
+            targetNum = (int) (Math.random() * maxNumber + minNumber);
         }
 
         //mientras el numero es invalido
         //el nº es invalido cuando es menor que 10 o mayor que 99
-        while (targetNumPriv < 10 || targetNumPriv > 99) {
+        while (targetNum < 10 || targetNum > 99) {
             System.err.println("Ese número no es valido, introduce un número entre 10 y 99");
-            targetNumPriv = sc.nextInt();
+            targetNum = sc.nextInt();
         }
-        return targetNumPriv;
-
+        return targetNum;
     }
 
-    public static int getFirstUserNumber(int count, int previousNumber) {
-        //Pedir primer numero entre 1 y 9
-        //El 1º número se aceptará automáticamente, ¿¿main con while (numInPut == 0)??
-
-
-        //System.out.println("Jugador 1, introduce un número entero del 1 al 9");
+    public static int getValidNumber() {
+        //esta función va validar que el número seleccionado por los jugadores esté entre 1 y 9.
         Scanner sc = new Scanner(System.in);
-        count = sc.nextInt();
+        int num = sc.nextInt();
 
-        while (count < 1 || count > 9) {
+        while (num < 1 || num > 9) {
             System.err.println("Ese número no es válido, introduce otro");
-            count = sc.nextInt();
+            num = sc.nextInt();
         }
-        return count;
+        nextNumber = num;
+
+        return nextNumber;
     }
 
 
-    public static int getRestOfTheNumbers(int count, int previousNumber, int nextNumber) {
-        //Segunda función para el resto de jugadas
-        //Si no es el 1º numero, el número deberá estar en la misma fila o columna que el ultimo introducido, pero no ser el mismo.
 
+    public static int getPlayableNumber() {
         Scanner sc = new Scanner(System.in);
-        nextNumber = sc.nextInt();
+        getValidNumber();
 
-        if (verifyPreviousNumber(previousNumber, nextNumber) == false){
+        if (verifyPreviousNumber() == false){
             System.err.println("Este número no es valido, introduce otro que este en la misma columna o fila que " + previousNumber);
-            nextNumber = sc.nextInt();
+            nextNumber = getPlayableNumber();
         }else{
             count = count + nextNumber;
-            System.out.println("Ahora la suma es de " + count);
+            previousNumber = nextNumber;
         }
-        return count;
-
-
-        // si iguala o supera = perdedor.
+        return nextNumber;
 
     }
 
-    public static boolean verifyPreviousNumber(int previousNumber, int nextNumber) {
+    public static boolean verifyPreviousNumber() {
 
         //hacer función a parte + while
 
@@ -164,6 +171,9 @@ public class Calculadora {
 
         //si count == 9, nextNumber tiene que ser o 3 o 6 o 8 o 7
         if (previousNumber == 9 && (nextNumber == 8 || nextNumber == 3 || nextNumber == 6 || nextNumber == 7)) {
+            return true;
+        }
+        if (previousNumber == 0){
             return true;
         }
         return false;
